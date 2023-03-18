@@ -1,0 +1,90 @@
+Kits:
+  MK:
+    permission: mochiklub.kit.mk
+    particle: PARTICLE_DUST
+    effects:
+      - "INCREASE_DAMAGE;15;1"
+    config:
+      distance: 10
+      damage: 5
+      heal: -1
+    itemstack:
+      name: "&aKit MK"
+      material: REDSTONE_BLOCK
+      data: 0
+      lore:
+        - "&7Clique &fdireito &7para ativar."
+        - ""
+        - "&eAtivamento:"
+        - " &7 - Atacará em área de {range} blocos"
+        - " &7 - Receberá força 1 por 15 segundos"
+  Emika:
+    permission: mochiklub.kit.emika
+    particle: PARTICLE_DUST
+    effects:
+      - "SPEED;15;1"
+    config:
+      reduce-jump: 2
+      launch-distance: 10
+    itemstack:
+      name: "&aKit Emika"
+      material: FIREWORK
+      data: 0
+      lore:
+        - "&7Clique &fdireito &7para ativar."
+        - ""
+        - "&eAtivamento:"
+        - " &7 - Lançará você {distance} blocos para frente"
+        - " &7 - Receberá velocidade 1 por 15 segundos"
+  Lirou:
+    permission: mochiklub.kit.lirou
+    particle: PARTICLE_DUST
+    config:
+      reduce-lava: 2
+      reduce-fire: 2
+    itemstack:
+      name: "&aKit Lirou"
+      material: DIAMOND_BLOCK
+      data: 0
+      lore:
+        - "&7Clique &fdireito &7para ativar."
+        - ""
+        - "&eAtivamento:"
+        - " &7 - Benção dos 4 elementos (fogo, água, terra e ar)"
+        - " &7 - Receberá menos dano do elemento fogo"
+  Ming:
+    permission: mochiklub.kit.ming
+    particle: PARTICLE_DUST
+    config:
+      launch-distance: 10
+    itemstack:
+      name: "&aKit Ming"
+      material: NOTEBLOCK
+      data: 0
+      lore:
+        - "&7Clique &fdireito &7para ativar."
+        - ""
+        - "&eAtivamento:"
+        - " &7 - Jogará todos os jogadores em um raio"
+        - " &7   de {distance} blocos para longe e causará dano."
+        - " &7 - Permite visualizar vida de jogadores e monstros"
+  Haruko:
+    name: "Haruko"
+    permission: mochiklub.kit.haruko
+    particle: PARTICLE_DUST
+    config:
+      attack-distance: 10
+      life: 4
+      heal: -1
+    itemstack:
+      name: "&aKit Haruko"
+      material: EMERALD_BLOCK
+      data: 0
+      lore:
+        - "&7Clique &fdireito &7para ativar regeneração."
+        - "&7Clique &fesquerdo &7para atacar projétil."
+        - ""
+        - "&eAtivamento:"
+        - " &7 - Permite curar todos a sua volta, incluindo você."
+        - " &7 - Recebe +2 corações de vida"
+        - " &7 - Ataque a distância via projétil"
