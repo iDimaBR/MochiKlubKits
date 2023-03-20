@@ -1,23 +1,29 @@
 package com.github.idimabr.mochiklubkits.manager;
 
 import com.github.idimabr.mochiklubkits.models.PlayerKit;
+import com.github.idimabr.mochiklubkits.storage.dao.StorageRepository;
 import com.google.common.collect.Maps;
+import lombok.RequiredArgsConstructor;
+import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 public class PlayerManager {
 
+    private final StorageRepository repository;
     private Map<UUID, PlayerKit> cache = Maps.newHashMap();
 
     public PlayerKit getPlayerKit(UUID uuid){
         PlayerKit playerKit = cache.get(uuid);
         if(playerKit == null){
-            // ** PUXA DO SQL **
-            // if(account == null) {
-            // ** SE FOR NULL DO SQL, CRIAR UM NOVO **
-            //    cache.put(uuid, new PlayerKit());
-            //}
+            playerKit = repository.loadUser(uuid);
+            if(playerKit == null) {
+                playerKit = new PlayerKit(uuid, null, 0);
+                cache.put(uuid, playerKit);
+            }
         }
         return playerKit;
     }
@@ -32,5 +38,9 @@ public class PlayerManager {
 
     public void removeCache(UUID uuid) {
         this.cache.remove(uuid);
+    }
+
+    public Map<UUID, PlayerKit> getCache() {
+        return cache;
     }
 }

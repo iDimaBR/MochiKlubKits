@@ -3,6 +3,7 @@ package com.github.idimabr.mochiklubkits.util;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -31,7 +32,7 @@ public class ItemBuilder {
 
 	public ItemBuilder(String material){
 		final boolean skull = material.startsWith("eyJ0");
-		is = new ItemStack(skull ? Material.SKULL_ITEM : Material.valueOf(material), 1);
+		is = new ItemStack(skull ? Material.PLAYER_HEAD : Material.valueOf(material), 1);
 		if(skull){
 			is.setDurability((short) 3);
 			setSkull(material);
@@ -262,6 +263,13 @@ public class ItemBuilder {
 		}
 		is.setItemMeta(headMeta);
 		cacheSkull.put(url, headMeta);
+		return this;
+	}
+
+	public ItemBuilder addNBT(String key, String value){
+		final NBTItem nbt = new NBTItem(is);
+		nbt.setString(key, value);
+		is = nbt.getItem();
 		return this;
 	}
 

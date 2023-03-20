@@ -3,4 +3,5 @@ version: '${project.version}'
 main: com.github.idimabr.mochiklubkits.MochiKlubKits
 api-version: 1.18
 prefix: MochiKlubKits
+depend: [nLogin]
 authors: [ iDimaBR ]

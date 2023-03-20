@@ -1,50 +1,58 @@
 package com.github.idimabr.mochiklubkits.storage.dao;
 
-import com.github.flexstore.FlexEconomy;
-import com.github.flexstore.manager.UserManager;
-import com.github.flexstore.model.UserAccount;
-import com.github.flexstore.storage.adapter.DataAdapter;
+import com.github.idimabr.mochiklubkits.MochiKlubKits;
+import com.github.idimabr.mochiklubkits.manager.PlayerManager;
+import com.github.idimabr.mochiklubkits.models.PlayerKit;
+import com.github.idimabr.mochiklubkits.storage.adapter.DataAdapter;
 import com.henryfabio.sqlprovider.executor.SQLExecutor;
+import com.henryfabio.sqlprovider.executor.result.SimpleResultSet;
 import lombok.AllArgsConstructor;
-
 import java.util.UUID;
 
 @AllArgsConstructor
 public class StorageRepository {
 
-    private FlexEconomy plugin;
+    private MochiKlubKits plugin;
 
     public void createTable() {
-        this.executor().updateQuery("CREATE TABLE IF NOT EXISTS accounts(" +
-                "`uuid` varchar(36) PRIMARY KEY NOT NULL, " +
-                "`coins` double default 0" +
+        this.executor().updateQuery("CREATE TABLE IF NOT EXISTS players(" +
+                "`uuid` VARCHAR(36) PRIMARY KEY NOT NULL, " +
+                "`kit` VARCHAR(36) NOT NULL," +
+                "`cooldown` BIGINT(19) default 0" +
                 ")");
+
     }
 
-    public void updateUser(UUID uuid, boolean bypassDirt) {
-        final UserManager userManager = plugin.getUserManager();
-        final UserAccount account = userManager.getAccount(uuid);
-        System.out.println(userManager.getCache());
-        if(account == null) return;
-        System.out.println("1");
-        if(!bypassDirt && !account.isDirty()) return;
-        System.out.println("2");
+    public void updateUser(UUID uuid) {
+        final PlayerManager manager = plugin.getPlayerManager();
+        final PlayerKit playerKit = manager.getPlayerKit(uuid);
+        if(playerKit == null) return;
+        if(playerKit.getKit() == null) return;
 
-        account.setDirty(false);
         this.executor().updateQuery(
-                "REPLACE INTO accounts(" +
+                "REPLACE INTO players(" +
                         "uuid," +
-                        "coins" +
-                        ") VALUES(?,?)",
+                        "kit," +
+                        "cooldown" +
+                        ") VALUES(?,?,?)",
                     statement -> {
                         statement.set(1, uuid.toString());
-                        statement.set(2, account.getCoins());
+                        statement.set(2, playerKit.getKit().getName());
+                        statement.set(3, playerKit.getCooldown());
                     });
     }
 
-    public UserAccount loadUser(UUID uuid) {
+    public boolean isDatabased(UUID uuid){
+        return this.executor().resultQuery(
+                "SELECT * FROM players WHERE uuid = ?;",
+                $ -> $.set(1, uuid.toString()),
+                SimpleResultSet::next
+        );
+    }
+
+    public PlayerKit loadUser(UUID uuid) {
         return this.executor().resultOneQuery(
-                "SELECT * FROM accounts WHERE uuid = ?;",
+                "SELECT * FROM players WHERE uuid = ?;",
                 statement -> statement.set(1, uuid.toString()),
                 DataAdapter.class
         );

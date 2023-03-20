@@ -6,6 +6,7 @@ import com.github.idimabr.mochiklubkits.util.ConfigUtil;
 import com.github.idimabr.mochiklubkits.util.ItemBuilder;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Data
 @RequiredArgsConstructor
 public class KitManager {
 
@@ -46,6 +48,7 @@ public class KitManager {
 
             if(kitSection.isSet("itemstack")){
                 final ItemBuilder builder = new ItemBuilder(kitSection.getString("itemstack.material", "BEDROCK"));
+                builder.addNBT("klubkits","");
 
                 if(kitSection.isSet("itemstack.name")) builder.setName(kitSection.getString("itemstack.name").replace("&","§"));
                 if(kitSection.isSet("itemstack.data")) builder.setDurability((short) kitSection.getInt("itemstack.data"));
@@ -55,7 +58,7 @@ public class KitManager {
                     builder.setLore(lore);
                 }
 
-                kit.setIcon(builder.build());
+                kit.setItem(builder.build());
             }
 
             if(kitSection.isSet("particle"))
@@ -75,8 +78,13 @@ public class KitManager {
             final String[] split = string.split(";");
             if(split.length < 2) continue;
 
-            effects.add(new PotionEffect(PotionEffectType.getByName(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2])));
+            effects.add(new PotionEffect(PotionEffectType.getByName(split[0]), 20 * Integer.parseInt(split[1]), Integer.parseInt(split[2])));
         }
         return effects;
+    }
+
+    public Kit cloneFromCache(String name){
+        final Kit kit = cacheKit.get(name);
+        return new Kit(kit.getName(), kit.getPermission(), kit.getEffects(), kit.getOptions(), kit.getItem(), kit.getParticle());
     }
 }

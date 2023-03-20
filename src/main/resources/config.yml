@@ -1,13 +1,23 @@
+Database:
+  type: "mysql" # sqlite ou mysql
+  sqlite:
+    fileName: "database.db"
+  mysql:
+    address: "localhost:3306"
+    username: "root"
+    password: ""
+    database: "mochiklubkits"
+
 Kits:
   MK:
     permission: mochiklub.kit.mk
-    particle: PARTICLE_DUST
+    particle: BLOCK_DUST
     effects:
       - "INCREASE_DAMAGE;15;1"
     config:
-      distance: 10
-      damage: 5
-      heal: -1
+      range: 10
+      line-cross: 5
+      damage: 5.0
     itemstack:
       name: "&aKit MK"
       material: REDSTONE_BLOCK
@@ -20,15 +30,16 @@ Kits:
         - " &7 - Receberá força 1 por 15 segundos"
   Emika:
     permission: mochiklub.kit.emika
-    particle: PARTICLE_DUST
+    particle: BLOCK_DUST
     effects:
       - "SPEED;15;1"
     config:
-      reduce-jump: 2
-      launch-distance: 10
+      reduce-jump: 1.5
+      distance: 4
+      distance-fly: 1
     itemstack:
       name: "&aKit Emika"
-      material: FIREWORK
+      material: FIREWORK_ROCKET
       data: 0
       lore:
         - "&7Clique &fdireito &7para ativar."
@@ -38,7 +49,7 @@ Kits:
         - " &7 - Receberá velocidade 1 por 15 segundos"
   Lirou:
     permission: mochiklub.kit.lirou
-    particle: PARTICLE_DUST
+    particle: BLOCK_DUST
     config:
       reduce-lava: 2
       reduce-fire: 2
@@ -54,12 +65,12 @@ Kits:
         - " &7 - Receberá menos dano do elemento fogo"
   Ming:
     permission: mochiklub.kit.ming
-    particle: PARTICLE_DUST
+    particle: BLOCK_DUST
     config:
       launch-distance: 10
     itemstack:
       name: "&aKit Ming"
-      material: NOTEBLOCK
+      material: NOTE_BLOCK
       data: 0
       lore:
         - "&7Clique &fdireito &7para ativar."
@@ -71,7 +82,7 @@ Kits:
   Haruko:
     name: "Haruko"
     permission: mochiklub.kit.haruko
-    particle: PARTICLE_DUST
+    particle: BLOCK_DUST
     config:
       attack-distance: 10
       life: 4
@@ -81,10 +92,50 @@ Kits:
       material: EMERALD_BLOCK
       data: 0
       lore:
-        - "&7Clique &fdireito &7para ativar regeneração."
-        - "&7Clique &fesquerdo &7para atacar projétil."
+        - "&7Clique &fesquerdo &7para ativar regeneração."
+        - "&7Clique &fdireito &7para atacar projétil."
         - ""
         - "&eAtivamento:"
         - " &7 - Permite curar todos a sua volta, incluindo você."
         - " &7 - Recebe +2 corações de vida"
         - " &7 - Ataque a distância via projétil"
+
+Menus:
+  Config:
+    title: "Escolha sua classe"
+    row: 3
+  MK:
+    name: "&aKit MK"
+    material: NETHER_STAR
+    slot: 10
+    data: 0
+    lore:
+      - "&7Clique para escolher esse kit"
+  Lirou:
+    name: "&aKit Lirou"
+    material: NETHER_STAR
+    data: 0
+    slot: 11
+    lore:
+      - "&7Clique para escolher esse kit"
+  Haruko:
+    name: "&aKit Haruko"
+    material: NETHER_STAR
+    data: 0
+    slot: 12
+    lore:
+      - "&7Clique para escolher esse kit"
+  Ming:
+    name: "&aKit Ming"
+    material: NETHER_STAR
+    data: 0
+    slot: 13
+    lore:
+      - "&7Clique para escolher esse kit"
+  Emika:
+    name: "&aKit Emika"
+    material: NETHER_STAR
+    data: 0
+    slot: 14
+    lore:
+      - "&7Clique para escolher esse kit"

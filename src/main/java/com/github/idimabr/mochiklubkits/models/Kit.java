@@ -16,8 +16,9 @@ public class Kit {
     private String permission;
     private List<PotionEffect> effects;
     private Map<String, Object> options;
-    private ItemStack icon;
+    private ItemStack item;
     private Particle particle;
+    private boolean running = false;
 
     public Kit(String name) {
         this.name = name;
@@ -41,20 +42,20 @@ public class Kit {
         this.options = options;
     }
 
-    public Kit(String name, String permission, List<PotionEffect> effects, Map<String, Object> options, ItemStack icon) {
+    public Kit(String name, String permission, List<PotionEffect> effects, Map<String, Object> options, ItemStack item) {
         this.name = name;
         this.permission = permission;
         this.effects = effects;
         this.options = options;
-        this.icon = icon;
+        this.item = item;
     }
 
-    public Kit(String name, String permission, List<PotionEffect> effects, Map<String, Object> options, ItemStack icon, Particle particle) {
+    public Kit(String name, String permission, List<PotionEffect> effects, Map<String, Object> options, ItemStack item, Particle particle) {
         this.name = name;
         this.permission = permission;
         this.effects = effects;
         this.options = options;
-        this.icon = icon;
+        this.item = item;
         this.particle = particle;
     }
 }

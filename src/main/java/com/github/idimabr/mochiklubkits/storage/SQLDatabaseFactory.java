@@ -1,6 +1,6 @@
 package com.github.idimabr.mochiklubkits.storage;
 
-import com.github.flexstore.FlexEconomy;
+import com.github.idimabr.mochiklubkits.MochiKlubKits;
 import com.henryfabio.sqlprovider.connector.SQLConnector;
 import com.henryfabio.sqlprovider.connector.type.impl.MySQLDatabaseType;
 import com.henryfabio.sqlprovider.connector.type.impl.SQLiteDatabaseType;
@@ -9,7 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.io.File;
 
 public class SQLDatabaseFactory {
-    private static final File FILE = new File(FlexEconomy.getInstance().getDataFolder(), "data");
+    private static final File FILE = new File(MochiKlubKits.getPlugin().getDataFolder(), "data");
 
     public static SQLConnector createConnector(ConfigurationSection section) {
         String databaseType = section.getString("type");
