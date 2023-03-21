@@ -46,7 +46,7 @@ public class HarukoListener implements Listener {
 
             kit.setRunning(true);
             new BukkitRunnable() {
-                int counter = 10;
+                int counter = (int) kit.getOptions().get("duration-heal");
                 @Override
                 public void run() {
                     if(counter == 0){

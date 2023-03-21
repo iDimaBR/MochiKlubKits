@@ -51,8 +51,19 @@ Kits:
     permission: mochiklub.kit.lirou
     particle: BLOCK_DUST
     config:
+      distance: 10
+      line-cross: 5
       reduce-lava: 2
       reduce-fire: 2
+      damage-air: 2.0
+      damage-fire: 2.0
+      damage-water: 2.0
+      damage-earth: 2.0
+      effects-element:
+        AIR: "LEVITATION;15;1"
+        FIRE: null
+        WATER: "SLOW;15;1"
+        EARTH: "BLINDNESS;15;1"
     itemstack:
       name: "&aKit Lirou"
       material: DIAMOND_BLOCK
@@ -67,7 +78,9 @@ Kits:
     permission: mochiklub.kit.ming
     particle: BLOCK_DUST
     config:
-      launch-distance: 10
+      distance: 10
+      damage: 5.0
+      duration: 10
     itemstack:
       name: "&aKit Ming"
       material: NOTE_BLOCK
@@ -85,6 +98,7 @@ Kits:
     particle: BLOCK_DUST
     config:
       attack-distance: 10
+      duration-heal: 10
       life: 4
       heal: -1
     itemstack:

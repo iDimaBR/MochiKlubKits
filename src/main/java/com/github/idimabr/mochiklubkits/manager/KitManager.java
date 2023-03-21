@@ -49,6 +49,8 @@ public class KitManager {
             if(kitSection.isSet("itemstack")){
                 final ItemBuilder builder = new ItemBuilder(kitSection.getString("itemstack.material", "BEDROCK"));
                 builder.addNBT("klubkits","");
+                if(name.equals("Lirou")) builder.addNBT("elementItem", "AIR");
+
 
                 if(kitSection.isSet("itemstack.name")) builder.setName(kitSection.getString("itemstack.name").replace("&","§"));
                 if(kitSection.isSet("itemstack.data")) builder.setDurability((short) kitSection.getInt("itemstack.data"));

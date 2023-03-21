@@ -1,9 +1,11 @@
 package com.github.idimabr.mochiklubkits;
 
+import com.github.idimabr.mochiklubkits.commands.ChangeClassCommand;
+import com.github.idimabr.mochiklubkits.commands.ItemKitCommand;
+import com.github.idimabr.mochiklubkits.commands.OpenMenuCommand;
+import com.github.idimabr.mochiklubkits.commands.ResetClassCommand;
 import com.github.idimabr.mochiklubkits.listener.*;
-import com.github.idimabr.mochiklubkits.listener.kits.EmikaListener;
-import com.github.idimabr.mochiklubkits.listener.kits.HarukoListener;
-import com.github.idimabr.mochiklubkits.listener.kits.MKListener;
+import com.github.idimabr.mochiklubkits.listener.kits.*;
 import com.github.idimabr.mochiklubkits.manager.KitManager;
 import com.github.idimabr.mochiklubkits.manager.PlayerManager;
 import com.github.idimabr.mochiklubkits.menus.ChooseGui;
@@ -48,12 +50,20 @@ public final class MochiKlubKits extends JavaPlugin {
         loadStorage();
         loadManagers();
         loadListeners();
+        loadCommands();
         loadTasks();
     }
 
     @Override
     public void onDisable() {
         // nada
+    }
+
+    private void loadCommands(){
+        getCommand("mkit").setExecutor(new ChangeClassCommand(repository, kitManager));
+        getCommand("itemkit").setExecutor(new ItemKitCommand(playerManager));
+        getCommand("mreset").setExecutor(new ResetClassCommand(repository, playerManager));
+        getCommand("mkmenu").setExecutor(new OpenMenuCommand(view));
     }
 
     private void loadListeners(){
@@ -64,6 +74,9 @@ public final class MochiKlubKits extends JavaPlugin {
         pm.registerEvents(new MKListener(playerManager), this);
         pm.registerEvents(new HarukoListener(playerManager), this);
         pm.registerEvents(new EmikaListener(playerManager), this);
+        pm.registerEvents(new LirouListener(playerManager), this);
+        pm.registerEvents(new MingListener(playerManager), this);
+
     }
 
     private void loadTasks(){

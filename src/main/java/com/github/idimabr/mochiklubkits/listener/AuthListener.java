@@ -40,6 +40,7 @@ public class AuthListener implements Listener {
         final Player player = e.getPlayer();
         final UUID uniqueId = player.getUniqueId();
         final PlayerKit playerKit = playerManager.findCache(uniqueId);
+        if(playerKit == null) return;
 
         player.getInventory().removeItem(playerKit.getKit().getItem());
         repository.updateUser(uniqueId);

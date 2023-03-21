@@ -5,3 +5,12 @@ api-version: 1.18
 prefix: MochiKlubKits
 depend: [nLogin]
 authors: [ iDimaBR ]
+commands:
+  mkit:
+    permission: mochiklubkits.changeclass
+  itemkit:
+    permission: mochiklubkits.itemkit
+  mreset:
+    permission: mochiklubkits.reset
+  mkmenu:
+    permission: mochiklubkits.openmenu
