@@ -1,14 +1,22 @@
 package com.github.idimabr.mochiklubkits.listener.kits;
 
+import com.github.idimabr.mochiklubkits.enuns.Clicked;
 import com.github.idimabr.mochiklubkits.event.ItemKitInteractEvent;
 import com.github.idimabr.mochiklubkits.manager.PlayerManager;
 import com.github.idimabr.mochiklubkits.models.Kit;
 import com.github.idimabr.mochiklubkits.models.PlayerKit;
+import com.github.idimabr.mochiklubkits.util.ConfigUtil;
 import com.github.idimabr.mochiklubkits.util.ItemBuilder;
+import com.github.idimabr.mochiklubkits.util.TimeUtils;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -21,6 +29,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.Map;
@@ -29,19 +38,15 @@ import java.util.Map;
 public class LirouListener implements Listener {
 
     private PlayerManager playerManager;
+    private ConfigUtil messages;
 
     @EventHandler
     public void onDrop(ItemKitInteractEvent e){
         final Player player = e.getPlayer();
         final PlayerKit playerKit = playerManager.findCache(player.getUniqueId());
+
         final Kit kit = playerKit.getKit();
         if(!kit.getName().equals("Lirou")) return;
-
-        if(playerKit.inCooldown()){
-            final float left = playerKit.getCooldown() / 1000;
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§cEspere " + left + " segundos para usar novamente."));
-            return;
-        }
 
         final ItemStack item = e.getItem();
         final NBTItem NBT = new NBTItem(item);
@@ -49,15 +54,33 @@ public class LirouListener implements Listener {
 
         final String element = NBT.getString("elementItem");
 
+        if(e.getClickType() == Clicked.LEFT){
+            final ItemStack elementItem = changeElement(item, element, kit);
+            player.getInventory().setItemInMainHand(elementItem);
+
+            final String newElement = new NBTItem(elementItem).getString("elementItem");
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§a§lELEMENTO: §f" + translateElement(newElement)));
+            return;
+        }
+
+        if(playerKit.inCooldown()){
+            player.spigot().sendMessage(
+                    ChatMessageType.ACTION_BAR,
+                    new TextComponent(messages.getString("KitDefaults.await-cooldown")
+                            .replace("&","§")
+                            .replace("{time}", TimeUtils.format(playerKit.getCooldown() - System.currentTimeMillis()))
+                    )
+            );
+            return;
+        }
+
         // VARIABLES OPTIONS
         final double damage = (double) kit.getOptions().get("damage-" + element.toLowerCase());
         final int distance = (int) kit.getOptions().get("distance");
         final int nearDistance = distance / 2;
         final int lineCross = (int) kit.getOptions().get("line-cross");
-
         final ConfigurationSection effects = (ConfigurationSection) kit.getOptions().get("effects-element");
-
-        System.out.println(effects);
+        //
 
         final List<Block> blocks = player.getLineOfSight(null, distance);
         final Block lastBlock = blocks.get(blocks.size() / 2);
@@ -82,9 +105,6 @@ public class LirouListener implements Listener {
             }
         }
 
-        final ItemStack elementItem = changeElement(item, element);
-        player.getInventory().setItemInMainHand(elementItem);
-
         playerKit.setCooldown(System.currentTimeMillis() + 2000);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§a§lHABILIDADE: §fElemento " + translateElement(element)));
     }
@@ -96,7 +116,11 @@ public class LirouListener implements Listener {
 
         final Player player = (Player) entity;
         final PlayerKit playerKit = playerManager.findCache(player.getUniqueId());
+        if(playerKit == null) return;
+
         final Kit kit = playerKit.getKit();
+        if(kit == null) return;
+        if(!kit.getName().equals("Lirou")) return;
 
         switch(e.getCause()){
             case FIRE:
@@ -110,16 +134,20 @@ public class LirouListener implements Listener {
         }
     }
 
-    private ItemStack changeElement(ItemStack item, String element){
+    private ItemStack changeElement(ItemStack item, String element, Kit kit){
+
+        final ConfigurationSection materials = (ConfigurationSection) kit.getOptions().get("material-element");
+        final Material newMaterial = Material.getMaterial(materials.getString(element.toUpperCase(), "BEDROCK"));
+
         switch(element.toUpperCase()){
             case "FIRE":
-                return new ItemBuilder(item).addNBT("elementItem", "WATER").build();
+                return new ItemBuilder(item).setMaterial(newMaterial).addNBT("elementItem", "WATER").build();
             case "WATER":
-                return new ItemBuilder(item).addNBT("elementItem", "EARTH").build();
+                return new ItemBuilder(item).setMaterial(newMaterial).addNBT("elementItem", "EARTH").build();
             case "EARTH":
-                return new ItemBuilder(item).addNBT("elementItem", "AIR").build();
+                return new ItemBuilder(item).setMaterial(newMaterial).addNBT("elementItem", "AIR").build();
             default:
-                return new ItemBuilder(item).addNBT("elementItem", "FIRE").build();
+                return new ItemBuilder(item).setMaterial(newMaterial).addNBT("elementItem", "FIRE").build();
         }
     }
 
@@ -145,4 +173,5 @@ public class LirouListener implements Listener {
                 return "Ar";
         }
     }
+
 }

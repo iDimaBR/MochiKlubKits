@@ -2,6 +2,7 @@ package com.github.idimabr.mochiklubkits.commands;
 
 import com.github.idimabr.mochiklubkits.manager.PlayerManager;
 import com.github.idimabr.mochiklubkits.models.PlayerKit;
+import com.github.idimabr.mochiklubkits.util.ConfigUtil;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import lombok.AllArgsConstructor;
 import org.bukkit.Material;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public class ItemKitCommand implements CommandExecutor {
 
     private PlayerManager playerManager;
+    private ConfigUtil messages;
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -27,7 +29,7 @@ public class ItemKitCommand implements CommandExecutor {
         }
 
         if(!sender.hasPermission("mochiklubkits.itemkit")){
-            sender.sendMessage("§cSem permissão!");
+            sender.sendMessage(messages.getString("Defaults.no-permission").replace("&","§"));
             return false;
         }
 
@@ -42,7 +44,16 @@ public class ItemKitCommand implements CommandExecutor {
         }
 
         final PlayerKit playerKit = playerManager.getPlayerKit(player.getUniqueId());
+        if(playerKit == null){
+            player.sendMessage(messages.getString("Defaults.no-have-class").replace("&","§"));
+            return false;
+        }
+        if(playerKit.getKit() == null){
+            player.sendMessage(messages.getString("Defaults.no-have-class").replace("&","§"));
+            return false;
+        }
+
         inventory.addItem(playerKit.getKit().getItem());
-        return false;
+        return true;
     }
 }

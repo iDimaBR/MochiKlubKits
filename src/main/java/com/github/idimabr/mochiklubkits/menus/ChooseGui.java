@@ -6,8 +6,11 @@ import com.github.idimabr.mochiklubkits.manager.PlayerManager;
 import com.github.idimabr.mochiklubkits.models.Kit;
 import com.github.idimabr.mochiklubkits.models.PlayerKit;
 import com.github.idimabr.mochiklubkits.storage.dao.StorageRepository;
+import com.github.idimabr.mochiklubkits.util.ConfigUtil;
 import com.github.idimabr.mochiklubkits.util.ItemBuilder;
+import com.github.idimabr.mochiklubkits.util.Utils;
 import lombok.AllArgsConstructor;
+import me.saiintbrisson.minecraft.OpenViewContext;
 import me.saiintbrisson.minecraft.View;
 import me.saiintbrisson.minecraft.ViewContext;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,20 +27,20 @@ public class ChooseGui extends View {
     public ChooseGui(MochiKlubKits plugin, int rows, String title) {
         super(rows, title);
         setCancelOnClick(true);
-        scheduleUpdate(20);
         this.plugin = plugin;
     }
-
     @Override
     public void onRender(@NotNull ViewContext context){
         final Player player = context.getPlayer();
         final FileConfiguration menus = plugin.getConfig();
+        final ConfigUtil messages = plugin.getMessages();
         final StorageRepository repository = plugin.getRepository();
         final PlayerManager playerManager = plugin.getPlayerManager();
         final KitManager kitManager = plugin.getKitManager();
 
         for (String key : menus.getConfigurationSection("Menus").getKeys(false)) {
             final ConfigurationSection section = menus.getConfigurationSection("Menus." + key);
+            if(section == null) continue;
             if(!section.isSet("slot")) continue;
             if(!section.isSet("material")) continue;
 
@@ -57,13 +60,25 @@ public class ChooseGui extends View {
 
             context.slot(slot, builder.build()).onClick(e -> {
                 playerManager.addCache(player.getUniqueId(), new PlayerKit(player.getUniqueId(), kit, 0));
-                player.getInventory().addItem(kit.getItem());
+                Utils.clearAndGive(kit, player);
                 repository.updateUser(player.getUniqueId());
 
-                player.sendMessage("§aVocê selecionou '§f" + key + "§a' como seu kit.");
+                if(kit.getName().equals("Haruko")){
+                    player.setMaxHealth(24);
+                }else{
+                    player.setMaxHealth(20);
+                }
+
+                player.sendMessage(
+                        messages.getString("Defaults.select-class")
+                        .replace("&","§")
+                        .replace("{kit}", key)
+                );
                 player.closeInventory();
             });
         }
     }
+
+
 }
 

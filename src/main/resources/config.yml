@@ -9,7 +9,7 @@ Database:
     database: "mochiklubkits"
 
 Kits:
-  MK:
+  Mk:
     permission: mochiklub.kit.mk
     particle: BLOCK_DUST
     effects:
@@ -19,7 +19,7 @@ Kits:
       line-cross: 5
       damage: 5.0
     itemstack:
-      name: "&aKit MK"
+      name: "&aKit Mk"
       material: REDSTONE_BLOCK
       data: 0
       lore:
@@ -64,6 +64,11 @@ Kits:
         FIRE: null
         WATER: "SLOW;15;1"
         EARTH: "BLINDNESS;15;1"
+      material-element:
+        AIR: WHITE_WOOL
+        FIRE: FIRE_CORAL_BLOCK
+        WATER: WATER_BUCKET
+        EARTH: DIRT
     itemstack:
       name: "&aKit Lirou"
       material: DIAMOND_BLOCK
@@ -101,6 +106,8 @@ Kits:
       duration-heal: 10
       life: 4
       heal: -1
+      arrow-effect-enable: true
+      arrow-effect: "POISON"
     itemstack:
       name: "&aKit Haruko"
       material: EMERALD_BLOCK
@@ -118,7 +125,7 @@ Menus:
   Config:
     title: "Escolha sua classe"
     row: 3
-  MK:
+  Mk:
     name: "&aKit MK"
     material: NETHER_STAR
     slot: 10

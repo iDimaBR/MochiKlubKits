@@ -43,6 +43,11 @@ public class ItemBuilder {
 		this.is = is;
 	}
 
+	public ItemBuilder setMaterial(Material material){
+		is.setType(material);
+		return this;
+	}
+
 	public ItemBuilder(Material m, int quantia) {
 		is = new ItemStack(m, quantia);
 	}

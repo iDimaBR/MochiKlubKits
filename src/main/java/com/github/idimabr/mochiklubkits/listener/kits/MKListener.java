@@ -5,6 +5,9 @@ import com.github.idimabr.mochiklubkits.manager.PlayerManager;
 import com.github.idimabr.mochiklubkits.models.Kit;
 import com.github.idimabr.mochiklubkits.models.PlayerKit;
 import com.github.idimabr.mochiklubkits.storage.dao.StorageRepository;
+import com.github.idimabr.mochiklubkits.util.ConfigUtil;
+import com.github.idimabr.mochiklubkits.util.TimeUtils;
+import com.github.idimabr.mochiklubkits.util.Utils;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import lombok.AllArgsConstructor;
 import me.saiintbrisson.minecraft.ViewFrame;
@@ -34,17 +37,24 @@ import java.util.stream.Stream;
 public class MKListener implements Listener {
 
     private PlayerManager playerManager;
+    private ConfigUtil messages;
+    private final List<Player> fallingPlayers;
 
     @EventHandler
     public void onDrop(ItemKitInteractEvent e){
         final Player player = e.getPlayer();
         final PlayerKit playerKit = playerManager.findCache(player.getUniqueId());
         final Kit kit = playerKit.getKit();
-        if(!kit.getName().equals("MK")) return;
+        if(!kit.getName().equals("Mk")) return;
 
         if(playerKit.inCooldown()){
-            final float left = playerKit.getCooldown() / 1000;
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§cEspere " + left + " segundos para usar novamente."));
+            player.spigot().sendMessage(
+                    ChatMessageType.ACTION_BAR,
+                    new TextComponent(messages.getString("KitDefaults.await-cooldown")
+                            .replace("&","§")
+                            .replace("{time}", TimeUtils.format(playerKit.getCooldown() - System.currentTimeMillis()))
+                    )
+            );
             return;
         }
 
@@ -60,6 +70,7 @@ public class MKListener implements Listener {
 
         for (Entity en : lastBlock.getWorld().getNearbyEntities(lastBlock.getLocation(), nearRange, nearRange, nearRange)) {
             if(!(en instanceof LivingEntity)) continue;
+            if(en.getUniqueId() == player.getUniqueId()) continue;
 
             final LivingEntity entity = (LivingEntity) en;
             for (Block block : blocks) {
@@ -77,8 +88,10 @@ public class MKListener implements Listener {
         }
 
         player.setVelocity(player.getLocation().getDirection().multiply(range));
-        player.setFallDistance(0);
+        fallingPlayers.remove(player);
+        fallingPlayers.add(player);
         playerKit.setCooldown(System.currentTimeMillis() + 2000);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§a§lHABILIDADE: §fDash furioso"));
+        Utils.playParticle(player, kit.getParticle());
     }
 }

@@ -1,6 +1,7 @@
 package com.github.idimabr.mochiklubkits.commands;
 
 import com.github.idimabr.mochiklubkits.menus.ChooseGui;
+import com.github.idimabr.mochiklubkits.util.ConfigUtil;
 import lombok.AllArgsConstructor;
 import me.saiintbrisson.minecraft.ViewFrame;
 import org.bukkit.command.Command;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class OpenMenuCommand implements CommandExecutor {
 
     private ViewFrame frame;
+    private ConfigUtil messages;
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -23,7 +25,7 @@ public class OpenMenuCommand implements CommandExecutor {
         }
 
         if(!sender.hasPermission("mochiklubkits.openmenu")){
-            sender.sendMessage("§cSem permissão!");
+            sender.sendMessage(messages.getString("Defaults.no-permission").replace("&","§"));
             return false;
         }
 

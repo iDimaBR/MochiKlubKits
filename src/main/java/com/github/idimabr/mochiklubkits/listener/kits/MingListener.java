@@ -5,6 +5,8 @@ import com.github.idimabr.mochiklubkits.event.ItemKitInteractEvent;
 import com.github.idimabr.mochiklubkits.manager.PlayerManager;
 import com.github.idimabr.mochiklubkits.models.Kit;
 import com.github.idimabr.mochiklubkits.models.PlayerKit;
+import com.github.idimabr.mochiklubkits.util.ConfigUtil;
+import com.github.idimabr.mochiklubkits.util.TimeUtils;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -24,6 +26,7 @@ import java.util.List;
 public class MingListener implements Listener {
 
     private PlayerManager playerManager;
+    private ConfigUtil messages;
 
     @EventHandler
     public void onDrop(ItemKitInteractEvent e){
@@ -33,8 +36,13 @@ public class MingListener implements Listener {
         if(!kit.getName().equals("Ming")) return;
 
         if(playerKit.inCooldown()){
-            final float left = playerKit.getCooldown() / 1000;
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§cEspere " + left + " segundos para usar novamente."));
+            player.spigot().sendMessage(
+                    ChatMessageType.ACTION_BAR,
+                    new TextComponent(messages.getString("KitDefaults.await-cooldown")
+                            .replace("&","§")
+                            .replace("{time}", TimeUtils.format(playerKit.getCooldown() - System.currentTimeMillis()))
+                    )
+            );
             return;
         }
 
@@ -57,6 +65,7 @@ public class MingListener implements Listener {
                 final List<Entity> entityList = player.getNearbyEntities(distance, distance, distance);
                 for (Entity en : entityList) {
                     if (!(en instanceof LivingEntity)) continue;
+                    if(en.getUniqueId() == player.getUniqueId()) continue;
                     final LivingEntity entity = (LivingEntity) en;
 
                     entity.setVelocity(entity.getLocation().getDirection().multiply(-3).normalize().setY(1));
@@ -68,6 +77,6 @@ public class MingListener implements Listener {
         }.runTaskTimer(MochiKlubKits.getPlugin(), 20L, 20L);
 
         playerKit.setCooldown(System.currentTimeMillis() + 2000);
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§a§lHABILIDADE: §fDash furioso"));
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§a§lHABILIDADE: §fFuração raivoso"));
     }
 }

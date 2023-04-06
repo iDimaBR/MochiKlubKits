@@ -1,0 +1,15 @@
+Defaults:
+  class-changed: "&eSua classe foi alterada para &f{kit}&e. Entre novamente!"
+  class-reset: "&eSua classe foi resetada. &l&nEntre novamente &epara escolher sua nova classe!"
+  no-permission: "&cVocê não tem permissão."
+  player-not-found: "&cJogador não encontrado!"
+  class-not-found: "&cClasse não encontrada!"
+  select-class: "&aVocê selecionou '&f{kit}&a' como sua classe."
+  no-have-class: "&cVocê não possui uma classe definida ainda para fazer isso."
+
+KitDefaults:
+  await-cooldown: "&cAguarde &7{time} &cpara usar novamente."
+
+
+Usages-Commands:
+  mkit: "&cUtilize o comando /mkit <kit> <jogador>"

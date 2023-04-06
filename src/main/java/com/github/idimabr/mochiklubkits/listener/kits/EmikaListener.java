@@ -4,6 +4,8 @@ import com.github.idimabr.mochiklubkits.event.ItemKitInteractEvent;
 import com.github.idimabr.mochiklubkits.manager.PlayerManager;
 import com.github.idimabr.mochiklubkits.models.Kit;
 import com.github.idimabr.mochiklubkits.models.PlayerKit;
+import com.github.idimabr.mochiklubkits.util.ConfigUtil;
+import com.github.idimabr.mochiklubkits.util.TimeUtils;
 import com.google.common.collect.Lists;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import lombok.AllArgsConstructor;
@@ -27,8 +29,9 @@ import java.util.List;
 public class EmikaListener implements Listener {
 
     private final PlayerManager playerManager;
+    private final ConfigUtil messages;
 
-    private List<Player> falling = Lists.newArrayList();
+    private final List<Player> fallingPlayers;
 
     @EventHandler
     public void onDrop(ItemKitInteractEvent e){
@@ -39,8 +42,13 @@ public class EmikaListener implements Listener {
         if(!kit.getName().equals("Emika")) return;
 
         if(playerKit.inCooldown()){
-            final float left = playerKit.getCooldown() / 1000;
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§cEspere " + left + " segundos para usar novamente."));
+            player.spigot().sendMessage(
+                    ChatMessageType.ACTION_BAR,
+                    new TextComponent(messages.getString("KitDefaults.await-cooldown")
+                            .replace("&","§")
+                            .replace("{time}", TimeUtils.format(playerKit.getCooldown() - System.currentTimeMillis()))
+                    )
+            );
             return;
         }
 
@@ -58,8 +66,6 @@ public class EmikaListener implements Listener {
         }
         NBT.applyNBT(item);
 
-        player.sendMessage("§fUsos: §c" + NBT.getInteger("useAmount"));
-
         final int distance = (int) kit.getOptions().get("distance");
         final int distanceFly = (int) kit.getOptions().get("distance-fly");
 
@@ -69,28 +75,8 @@ public class EmikaListener implements Listener {
         }
 
         player.setVelocity(player.getLocation().getDirection().multiply(distance).normalize().setY(distanceFly));
-        falling.remove(player);
-        falling.add(player);
+        fallingPlayers.remove(player);
+        fallingPlayers.add(player);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§a§lHABILIDADE: §fPular"));
-    }
-
-    @EventHandler
-    public void onDamage(EntityDamageEvent e){
-        if(e.getEntity().getType() != EntityType.PLAYER) return;
-        if(!e.getCause().equals(EntityDamageEvent.DamageCause.FALL)) return;
-
-        final Player player = (Player) e.getEntity();
-        final PlayerKit playerKit = playerManager.findCache(player.getUniqueId());
-        final Kit kit = playerKit.getKit();
-        if(!kit.getName().equals("Emika")) return;
-
-        if(falling.contains(player)){
-            e.setCancelled(true);
-            falling.remove(player);
-            return;
-        }
-
-        final double reduce = (double) kit.getOptions().get("reduce-jump");
-        e.setDamage(e.getDamage() - reduce);
     }
 }
