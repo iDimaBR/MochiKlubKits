@@ -1,5 +1,6 @@
 package com.github.idimabr.mochiklubkits.listener;
 
+import com.github.idimabr.mochiklubkits.manager.BarManager;
 import com.github.idimabr.mochiklubkits.manager.PlayerManager;
 import com.github.idimabr.mochiklubkits.menus.ChooseGui;
 import com.github.idimabr.mochiklubkits.models.Kit;
@@ -25,6 +26,7 @@ public class AuthListener implements Listener {
 
     private PlayerManager playerManager;
     private StorageRepository repository;
+    private BarManager barManager;
     private ViewFrame frame;
 
     @EventHandler
@@ -39,10 +41,16 @@ public class AuthListener implements Listener {
             final Kit kit = playerKit.getKit();
             if(kit == null) return;
 
-            if(kit.getName().equals("Haruko")){
-                player.setMaxHealth(24);
-            }else{
-                player.setMaxHealth(20);
+            switch(kit.getName()){
+                case "Haruko":
+                    player.setMaxHealth(24);
+                    break;
+                case "Ming":
+                    barManager.initBar(player);
+                    break;
+                default:
+                    player.setMaxHealth(20);
+                    break;
             }
             Utils.clearAndGive(kit, player);
         }else{
@@ -60,5 +68,6 @@ public class AuthListener implements Listener {
         player.getInventory().removeItem(playerKit.getKit().getItem());
         repository.updateUser(uniqueId);
         playerManager.removeCache(uniqueId);
+        barManager.removeBar(player);
     }
 }

@@ -4,6 +4,16 @@ import com.github.idimabr.mochiklubkits.enuns.Clicked;
 import com.github.idimabr.mochiklubkits.event.ItemKitInteractEvent;
 import com.github.idimabr.mochiklubkits.manager.PlayerManager;
 import com.github.idimabr.mochiklubkits.models.PlayerKit;
+import com.github.idimabr.mochiklubkits.util.ConfigUtil;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
@@ -25,10 +35,13 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.List;
+
 @AllArgsConstructor
 public class ProtectItemListener implements Listener {
 
     private PlayerManager playerManager;
+    private ConfigUtil config;
 
     @EventHandler
     public void onCraft(CraftItemEvent e){
@@ -159,6 +172,17 @@ public class ProtectItemListener implements Listener {
         final String kitName = NBT.getString("klubkits");
         if(playerKit.getKit() == null) return;
         if(!playerKit.getKit().getName().equalsIgnoreCase(kitName)) return;
+
+        // block regions
+        final Location loc = BukkitAdapter.adapt(player.getLocation());
+        final RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        final RegionQuery query = container.createQuery();
+        final ApplicableRegionSet set = query.getApplicableRegions(loc);
+        final List<String> blacklist = config.getStringList("Blocked-Regions");
+        for (ProtectedRegion region : set) {
+            if(blacklist.contains(region.getId())) return;
+        }
+        //
 
         Bukkit.getPluginManager().callEvent(new ItemKitInteractEvent(player, playerKit, item, e.getAction().name().contains("RIGHT") ? Clicked.RIGHT : Clicked.LEFT));
         e.setCancelled(true);

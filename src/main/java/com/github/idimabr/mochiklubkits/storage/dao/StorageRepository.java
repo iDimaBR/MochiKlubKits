@@ -20,7 +20,7 @@ public class StorageRepository {
         this.executor().updateQuery("CREATE TABLE IF NOT EXISTS players(" +
                 "`uuid` VARCHAR(36) PRIMARY KEY NOT NULL, " +
                 "`kit` VARCHAR(36) NOT NULL," +
-                "`cooldown` BIGINT(19) default 0" +
+                "`cooldown` BIGINT(19)" +
                 ")");
 
     }

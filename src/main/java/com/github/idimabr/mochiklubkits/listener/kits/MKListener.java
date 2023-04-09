@@ -1,5 +1,6 @@
 package com.github.idimabr.mochiklubkits.listener.kits;
 
+import com.github.idimabr.mochiklubkits.MochiKlubKits;
 import com.github.idimabr.mochiklubkits.event.ItemKitInteractEvent;
 import com.github.idimabr.mochiklubkits.manager.PlayerManager;
 import com.github.idimabr.mochiklubkits.models.Kit;
@@ -14,6 +15,8 @@ import me.saiintbrisson.minecraft.ViewFrame;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -26,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.Collection;
@@ -90,8 +94,37 @@ public class MKListener implements Listener {
         player.setVelocity(player.getLocation().getDirection().multiply(range));
         fallingPlayers.remove(player);
         fallingPlayers.add(player);
+
+        new BukkitRunnable(){
+            int entitiesCount = 100;
+            public void run(){
+                if(!fallingPlayers.contains(player) || entitiesCount-- <= 0){
+                    this.cancel();
+                    return;
+                }
+
+                if(kit.getParticleOptions() != null) {
+                    player.getWorld().spawnParticle(
+                            kit.getParticle(),
+                            player.getLocation().getX(),
+                            player.getLocation().getY(),
+                            player.getLocation().getZ(),
+                            0,
+                            0.001,
+                            1,
+                            0,
+                            1,
+                            kit.getParticleOptions()
+                    );
+                }else {
+                    player.getWorld().spawnParticle(kit.getParticle(), player.getLocation(), 1);
+                }
+            }
+        }.runTaskTimer(MochiKlubKits.getPlugin(), 0, 1);
+
         playerKit.setCooldown(System.currentTimeMillis() + 2000);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§a§lHABILIDADE: §fDash furioso"));
-        Utils.playParticle(player, kit.getParticle());
+        Utils.playParticle(player, kit.getParticle(), kit.getParticleOptions());
+        player.playSound(player.getLocation(), kit.getSound(), 1, 1);
     }
 }

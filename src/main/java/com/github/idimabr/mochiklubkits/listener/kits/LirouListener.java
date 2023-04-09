@@ -8,15 +8,13 @@ import com.github.idimabr.mochiklubkits.models.PlayerKit;
 import com.github.idimabr.mochiklubkits.util.ConfigUtil;
 import com.github.idimabr.mochiklubkits.util.ItemBuilder;
 import com.github.idimabr.mochiklubkits.util.TimeUtils;
+import com.github.idimabr.mochiklubkits.util.Utils;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -29,10 +27,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
-
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
 public class LirouListener implements Listener {
@@ -41,7 +36,7 @@ public class LirouListener implements Listener {
     private ConfigUtil messages;
 
     @EventHandler
-    public void onDrop(ItemKitInteractEvent e){
+    public void onUse(ItemKitInteractEvent e){
         final Player player = e.getPlayer();
         final PlayerKit playerKit = playerManager.findCache(player.getUniqueId());
 
@@ -60,6 +55,7 @@ public class LirouListener implements Listener {
 
             final String newElement = new NBTItem(elementItem).getString("elementItem");
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§a§lELEMENTO: §f" + translateElement(newElement)));
+            player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 0.3F, 0.3F);
             return;
         }
 
@@ -105,8 +101,10 @@ public class LirouListener implements Listener {
             }
         }
 
+        Utils.particleBeam(player, kit.getParticle(), kit.getParticleOptions());
         playerKit.setCooldown(System.currentTimeMillis() + 2000);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§a§lHABILIDADE: §fElemento " + translateElement(element)));
+        player.playSound(player.getLocation(), kit.getSound(), 1, 1);
     }
 
     @EventHandler

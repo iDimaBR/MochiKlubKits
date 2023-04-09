@@ -8,13 +8,20 @@ import com.github.idimabr.mochiklubkits.models.Kit;
 import com.github.idimabr.mochiklubkits.models.PlayerKit;
 import com.github.idimabr.mochiklubkits.util.ConfigUtil;
 import com.github.idimabr.mochiklubkits.util.TimeUtils;
+import com.github.idimabr.mochiklubkits.util.Utils;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -31,7 +38,7 @@ public class HarukoListener implements Listener {
     private ConfigUtil messages;
 
     @EventHandler
-    public void onDrop(ItemKitInteractEvent e) {
+    public void onUse(ItemKitInteractEvent e) {
         final Player player = e.getPlayer();
         final PlayerKit playerKit = playerManager.findCache(player.getUniqueId());
         final Kit kit = playerKit.getKit();
@@ -49,13 +56,15 @@ public class HarukoListener implements Listener {
         }
 
         playerKit.setCooldown(System.currentTimeMillis() + 2000);
+        player.playSound(player.getLocation(), kit.getSound(), 1, 1);
 
         if (e.getClickType() == Clicked.LEFT) {
             if(kit.isRunning()) return;
-
+            final int duration = (int) kit.getOptions().get("duration-heal");
+            Utils.createSpiral(player, kit.getParticle(), kit.getParticleOptions());
             kit.setRunning(true);
             new BukkitRunnable() {
-                int counter = (int) kit.getOptions().get("duration-heal");
+                int counter = duration;
                 @Override
                 public void run() {
                     if(counter == 0){
@@ -87,12 +96,47 @@ public class HarukoListener implements Listener {
                 );
             }
 
+            new BukkitRunnable(){
+                int entitiesCount = 100;
+                public void run(){
+                    final Location location = arrow.getLocation();
+                    if(arrow.isDead() || arrow.isInBlock() || arrow.isInWater() || arrow.isOnGround() || entitiesCount-- <= 0){
+                        this.cancel();
+                        return;
+                    }
+                    if(kit.getParticleOptions() != null) {
+                        player.getWorld().spawnParticle(
+                                kit.getParticle(),
+                                location.getX(),
+                                location.getY(),
+                                location.getZ(),
+                                0,
+                                0.001,
+                                1,
+                                0,
+                                1,
+                                kit.getParticleOptions()
+                        );
+                    }else {
+                        player.getWorld().spawnParticle(kit.getParticle(), location, 1);
+                    }
+                }
+            }.runTaskTimer(MochiKlubKits.getPlugin(), 0, 1);
+
             arrow.setVelocity(player.getLocation().getDirection().multiply(2.5D));
             arrow.setDamage(5);
             arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
             arrow.setKnockbackStrength(2);
+            arrow.setMetadata("haruko", new FixedMetadataValue(MochiKlubKits.getPlugin(), ""));
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§a§lHABILIDADE: §fProjétil rápido"));
             kit.setRunning(false);
         }
+    }
+
+    @EventHandler
+    public void onHit(ProjectileHitEvent e){
+        final Projectile entity = e.getEntity();
+        if(!entity.hasMetadata("haruko")) return;
+        entity.remove();
     }
 }

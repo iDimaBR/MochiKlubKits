@@ -1,5 +1,6 @@
 package com.github.idimabr.mochiklubkits.listener.kits;
 
+import com.github.idimabr.mochiklubkits.MochiKlubKits;
 import com.github.idimabr.mochiklubkits.event.ItemKitInteractEvent;
 import com.github.idimabr.mochiklubkits.manager.PlayerManager;
 import com.github.idimabr.mochiklubkits.models.Kit;
@@ -12,6 +13,9 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -22,6 +26,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
@@ -78,5 +83,33 @@ public class EmikaListener implements Listener {
         fallingPlayers.remove(player);
         fallingPlayers.add(player);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§a§lHABILIDADE: §fPular"));
+        player.playSound(player.getLocation(), kit.getSound(), 1, 1);
+
+        new BukkitRunnable(){
+            int entitiesCount = 100;
+            public void run(){
+                if(!fallingPlayers.contains(player) || entitiesCount-- <= 0){
+                    this.cancel();
+                    return;
+                }
+
+                if(kit.getParticleOptions() != null) {
+                    player.getWorld().spawnParticle(
+                            kit.getParticle(),
+                            player.getLocation().getX(),
+                            player.getLocation().getY(),
+                            player.getLocation().getZ(),
+                            0,
+                            0.001,
+                            1,
+                            0,
+                            1,
+                            kit.getParticleOptions()
+                    );
+                }else {
+                    player.getWorld().spawnParticle(kit.getParticle(), player.getLocation(), 1);
+                }
+            }
+        }.runTaskTimer(MochiKlubKits.getPlugin(), 0, 1);
     }
 }

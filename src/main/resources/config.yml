@@ -8,10 +8,18 @@ Database:
     password: ""
     database: "mochiklubkits"
 
+Blocked-Regions:
+  - "spawn"
+
 Kits:
   Mk:
     permission: mochiklub.kit.mk
-    particle: BLOCK_DUST
+    particle: REDSTONE
+    sound: BLOCK_ANVIL_HIT
+    particle-options:
+      red: 102
+      green: 255
+      blue: 255
     effects:
       - "INCREASE_DAMAGE;15;1"
     config:
@@ -30,7 +38,12 @@ Kits:
         - " &7 - Receberá força 1 por 15 segundos"
   Emika:
     permission: mochiklub.kit.emika
-    particle: BLOCK_DUST
+    particle: REDSTONE
+    sound: BLOCK_ANVIL_HIT
+    particle-options:
+      red: 102
+      green: 255
+      blue: 255
     effects:
       - "SPEED;15;1"
     config:
@@ -49,7 +62,12 @@ Kits:
         - " &7 - Receberá velocidade 1 por 15 segundos"
   Lirou:
     permission: mochiklub.kit.lirou
-    particle: BLOCK_DUST
+    particle: REDSTONE
+    sound: BLOCK_ANVIL_HIT
+    particle-options:
+      red: 102
+      green: 255
+      blue: 255
     config:
       distance: 10
       line-cross: 5
@@ -81,11 +99,17 @@ Kits:
         - " &7 - Receberá menos dano do elemento fogo"
   Ming:
     permission: mochiklub.kit.ming
-    particle: BLOCK_DUST
+    particle: REDSTONE
+    sound: BLOCK_ANVIL_HIT
+    particle-options:
+      red: 102
+      green: 255
+      blue: 255
     config:
       distance: 10
       damage: 5.0
       duration: 10
+      bar-title-attack: "&f{attacked} &aestá com &f{health}/{maxhealth} &ade vida"
     itemstack:
       name: "&aKit Ming"
       material: NOTE_BLOCK
@@ -100,7 +124,12 @@ Kits:
   Haruko:
     name: "Haruko"
     permission: mochiklub.kit.haruko
-    particle: BLOCK_DUST
+    particle: REDSTONE
+    sound: BLOCK_ANVIL_HIT
+    particle-options:
+      red: 102
+      green: 255
+      blue: 255
     config:
       attack-distance: 10
       duration-heal: 10

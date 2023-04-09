@@ -1,6 +1,7 @@
 package com.github.idimabr.mochiklubkits.menus;
 
 import com.github.idimabr.mochiklubkits.MochiKlubKits;
+import com.github.idimabr.mochiklubkits.manager.BarManager;
 import com.github.idimabr.mochiklubkits.manager.KitManager;
 import com.github.idimabr.mochiklubkits.manager.PlayerManager;
 import com.github.idimabr.mochiklubkits.models.Kit;
@@ -37,6 +38,7 @@ public class ChooseGui extends View {
         final StorageRepository repository = plugin.getRepository();
         final PlayerManager playerManager = plugin.getPlayerManager();
         final KitManager kitManager = plugin.getKitManager();
+        final BarManager barManager = plugin.getBarManager();
 
         for (String key : menus.getConfigurationSection("Menus").getKeys(false)) {
             final ConfigurationSection section = menus.getConfigurationSection("Menus." + key);
@@ -63,10 +65,16 @@ public class ChooseGui extends View {
                 Utils.clearAndGive(kit, player);
                 repository.updateUser(player.getUniqueId());
 
-                if(kit.getName().equals("Haruko")){
-                    player.setMaxHealth(24);
-                }else{
-                    player.setMaxHealth(20);
+                switch(kit.getName()){
+                    case "Haruko":
+                        player.setMaxHealth(24);
+                        break;
+                    case "Ming":
+                        barManager.initBar(player);
+                        break;
+                    default:
+                        player.setMaxHealth(20);
+                        break;
                 }
 
                 player.sendMessage(

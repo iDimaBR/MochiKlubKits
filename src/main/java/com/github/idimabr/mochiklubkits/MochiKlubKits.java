@@ -6,17 +6,18 @@ import com.github.idimabr.mochiklubkits.commands.OpenMenuCommand;
 import com.github.idimabr.mochiklubkits.commands.ResetClassCommand;
 import com.github.idimabr.mochiklubkits.listener.*;
 import com.github.idimabr.mochiklubkits.listener.kits.*;
+import com.github.idimabr.mochiklubkits.manager.BarManager;
 import com.github.idimabr.mochiklubkits.manager.KitManager;
 import com.github.idimabr.mochiklubkits.manager.PlayerManager;
 import com.github.idimabr.mochiklubkits.menus.ChooseGui;
+import com.github.idimabr.mochiklubkits.models.PlayerKit;
 import com.github.idimabr.mochiklubkits.storage.SQLDatabaseFactory;
 import com.github.idimabr.mochiklubkits.storage.dao.StorageRepository;
+import com.github.idimabr.mochiklubkits.task.MingBarTask;
 import com.github.idimabr.mochiklubkits.task.SelectClassTask;
 import com.github.idimabr.mochiklubkits.util.ConfigUtil;
 import com.google.common.collect.Lists;
 import com.henryfabio.sqlprovider.connector.SQLConnector;
-import com.nickuc.login.api.nLoginAPI;
-import com.nickuc.login.api.nLoginAPIHolder;
 import lombok.Getter;
 import me.saiintbrisson.minecraft.ViewFrame;
 import org.bukkit.Bukkit;
@@ -25,6 +26,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Getter
 public final class MochiKlubKits extends JavaPlugin {
@@ -34,6 +37,7 @@ public final class MochiKlubKits extends JavaPlugin {
     private ConfigUtil messages;
     private KitManager kitManager;
     private PlayerManager playerManager;
+    private BarManager barManager;
     private SQLConnector connection;
     private StorageRepository repository;
     private ViewFrame view;
@@ -66,6 +70,10 @@ public final class MochiKlubKits extends JavaPlugin {
     @Override
     public void onDisable() {
         // nada
+        for (Map.Entry<UUID, PlayerKit> entry : playerManager.getCache().entrySet()) {
+            final UUID uuid = entry.getKey();
+            repository.updateUser(uuid);
+        }
     }
 
     private void loadCommands(){
@@ -77,8 +85,8 @@ public final class MochiKlubKits extends JavaPlugin {
 
     private void loadListeners(){
         final PluginManager pm = Bukkit.getPluginManager();
-        pm.registerEvents(new AuthListener(playerManager, repository, view), this);
-        pm.registerEvents(new ProtectItemListener(playerManager), this);
+        pm.registerEvents(new AuthListener(playerManager, repository, barManager, view), this);
+        pm.registerEvents(new ProtectItemListener(playerManager, config), this);
         pm.registerEvents(new BlockFallDamageListener(playerManager, fallingPlayers), this);
 
         pm.registerEvents(new MKListener(playerManager, messages, fallingPlayers), this);
@@ -87,10 +95,20 @@ public final class MochiKlubKits extends JavaPlugin {
         pm.registerEvents(new LirouListener(playerManager, messages), this);
         pm.registerEvents(new MingListener(playerManager, messages), this);
 
+        if(!pm.isPluginEnabled("WorldGuard")){
+            getLogger().warning("A dependencia 'WorldGuard' nao foi carregada.");
+            pm.disablePlugin(this);
+        }
+
+        if(!pm.isPluginEnabled("nLogin")){
+            getLogger().warning("A dependencia 'nLogin' nao foi carregada.");
+            pm.disablePlugin(this);
+        }
     }
 
     private void loadTasks(){
         new SelectClassTask(playerManager, view).runTaskTimer(this, 20L * 10 , 20L * 10);
+        new MingBarTask(playerManager, barManager, config).runTaskTimer(this, 10L, 10L);
     }
 
     private void loadManagers(){
@@ -98,6 +116,8 @@ public final class MochiKlubKits extends JavaPlugin {
         this.kitManager.loadKitsCache();
 
         this.playerManager = new PlayerManager(repository);
+
+        this.barManager = new BarManager(config);
     }
 
     private void loadStorage() {
